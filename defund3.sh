@@ -133,6 +133,12 @@ LimitNOFILE=65535
 WantedBy=multi-user.target
 EOF
 
+rm -rf $HOME/.defund/data 
+rm -rf $HOME/.defund/wasm
+
+SNAP_NAME=$(curl -s https://snapshots3-testnet.nodejumper.io/defund-testnet/ | egrep -o ">defund-private-3.*\.tar.lz4" | tr -d ">")
+curl https://snapshots3-testnet.nodejumper.io/defund-testnet/${SNAP_NAME} | lz4 -dc - | tar -xf - -C $HOME/.defund
+
 # start service
 sudo systemctl daemon-reload
 sudo systemctl enable defundd
