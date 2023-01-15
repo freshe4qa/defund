@@ -91,7 +91,7 @@ sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0ufetf\"/" $HOME/.d
 
 # set peers and seeds
 SEEDS="d837b7f78c03899d8964351fb95c78e84128dff6@174.83.6.129:30791,f03f3a18bae28f2099648b1c8b1eadf3323cf741@162.55.211.136:26656,f8fa20444c3c56a2d3b4fdc57b3fd059f7ae3127@148.251.43.226:56656,70a1f41dea262730e7ab027bcf8bd2616160a9a9@142.132.202.86:17000"
-PEERS="d837b7f78c03899d8964351fb95c78e84128dff6@174.83.6.129:30791,f03f3a18bae28f2099648b1c8b1eadf3323cf741@162.55.211.136:26656,f8fa20444c3c56a2d3b4fdc57b3fd059f7ae3127@148.251.43.226:56656,70a1f41dea262730e7ab027bcf8bd2616160a9a9@142.132.202.86:17000"
+PEERS="6366ac3af3995ecbc48c13ce9564aef0c7a6d7df@defund-testnet.nodejumper.io:28656,f03f3a18bae28f2099648b1c8b1eadf3323cf741@162.55.211.136:26656,a9c52398d4ea4b3303923e2933990f688c593bd8@157.90.208.222:36656,b136caf667b9cb81de8c1858de300376d7a0ee0f@65.21.53.39:46656,a56c51d7a130f33ffa2965a60bee938e7a60c01f@142.132.158.4:10656,51c8bb36bfd184bdd5a8ee67431a0298218de946@57.128.80.37:26656"
 sed -i -e "s/^seeds *=.*/seeds = \"$SEEDS\"/; s/^persistent_peers *=.*/persistent_peers = \"$PEERS\"/" $HOME/.defund/config/config.toml
 
 # config pruning
@@ -124,6 +124,9 @@ EOF
 
 # reset
 defundd tendermint unsafe-reset-all
+
+SNAP_NAME=$(curl -s https://snapshots3-testnet.nodejumper.io/defund-testnet/ | egrep -o ">defund-private-4.*\.tar.lz4" | tr -d ">")
+curl https://snapshots3-testnet.nodejumper.io/defund-testnet/${SNAP_NAME} | lz4 -dc - | tar -xf - -C $HOME/.defund
 
 # start service
 sudo systemctl daemon-reload
