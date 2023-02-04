@@ -72,7 +72,7 @@ fi
 cd $HOME && rm -rf defund
 git clone https://github.com/defund-labs/defund.git
 cd defund
-git checkout v0.2.2
+git checkout v0.2.3
 make install
 
 # config
