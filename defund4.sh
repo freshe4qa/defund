@@ -83,8 +83,8 @@ defundd config keyring-backend test
 defundd init $NODENAME --chain-id $DEFUND_CHAIN_ID
 
 # download genesis and addrbook
-cd $HOME/.defund/config
 curl -s https://raw.githubusercontent.com/defund-labs/testnet/main/defund-private-4/genesis.json > ~/.defund/config/genesis.json
+curl -s https://snapshots2-testnet.nodejumper.io/defund-testnet/addrbook.json > $HOME/.defund/config/addrbook.json
 
 # set minimum gas price
 sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0ufetf\"/" $HOME/.defund/config/app.toml
@@ -139,9 +139,9 @@ WantedBy=multi-user.target
 EOF
 
 # reset
-defundd tendermint unsafe-reset-all
+defundd tendermint unsafe-reset-all --home $HOME/.defund --keep-addr-book
 
-curl https://snapshots-testnet.nodejumper.io/defund-testnet/defund-private-4_2023-02-06.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.defund
+curl https://snapshots2-testnet.nodejumper.io/defund-testnet/defund-private-4_2023-03-04.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.defund
 
 # start service
 sudo systemctl daemon-reload
