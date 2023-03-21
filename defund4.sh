@@ -73,7 +73,8 @@ cd $HOME && rm -rf defund
 git clone https://github.com/defund-labs/defund.git
 cd defund
 git checkout v0.2.6
-make install
+make build
+sudo mv ./build/defundd /usr/local/bin/ || exit
 
 # config
 defundd config chain-id $DEFUND_CHAIN_ID
