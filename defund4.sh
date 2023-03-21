@@ -54,17 +54,19 @@ source $HOME/.bash_profile
 sudo apt update && sudo apt upgrade -y
 
 # packages
-sudo apt update && sudo apt upgrade -y
 sudo apt install curl build-essential git wget jq make gcc tmux chrony lz4 unzip -y
 
 # install go
-cd $HOME
-wget -O go1.19.1.linux-amd64.tar.gz https://golang.org/dl/go1.19.1.linux-amd64.tar.gz
-rm -rf /usr/local/go && tar -C /usr/local -xzf go1.19.1.linux-amd64.tar.gz && rm go1.19.1.linux-amd64.tar.gz
+if ! [ -x "$(command -v go)" ]; then
+  ver="1.19.4"
+  cd $HOME
+wget -O go1.19.4.linux-amd64.tar.gz https://golang.org/dl/go1.19.4.linux-amd64.tar.gz
+sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.19.4.linux-amd64.tar.gz && sudo rm go1.19.4.linux-amd64.tar.gz
 echo 'export GOROOT=/usr/local/go' >> $HOME/.bash_profile
 echo 'export GOPATH=$HOME/go' >> $HOME/.bash_profile
 echo 'export GO111MODULE=on' >> $HOME/.bash_profile
 echo 'export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin' >> $HOME/.bash_profile && . $HOME/.bash_profile
+fi
 
 # download binary
 cd $HOME && rm -rf defund
