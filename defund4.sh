@@ -47,32 +47,30 @@ fi
 if [ ! $WALLET ]; then
 	echo "export WALLET=wallet" >> $HOME/.bash_profile
 fi
-echo "export DEFUND_CHAIN_ID=defund-private-4" >> $HOME/.bash_profile
+echo "export DEFUND_CHAIN_ID=orbit-alpha-1" >> $HOME/.bash_profile
 source $HOME/.bash_profile
 
 # update
 sudo apt update && sudo apt upgrade -y
 
 # packages
-sudo apt install curl build-essential git wget jq make gcc tmux chrony -y
+sudo apt -q update
+sudo apt -qy install curl git jq lz4 build-essential
+sudo apt -qy upgrade
 
 # install go
 if ! [ -x "$(command -v go)" ]; then
-  ver="1.19.4"
-  cd $HOME
-wget -O go1.19.4.linux-amd64.tar.gz https://golang.org/dl/go1.19.4.linux-amd64.tar.gz
-sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.19.4.linux-amd64.tar.gz && sudo rm go1.19.4.linux-amd64.tar.gz
-echo 'export GOROOT=/usr/local/go' >> $HOME/.bash_profile
-echo 'export GOPATH=$HOME/go' >> $HOME/.bash_profile
-echo 'export GO111MODULE=on' >> $HOME/.bash_profile
-echo 'export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin' >> $HOME/.bash_profile && . $HOME/.bash_profile
+sudo rm -rf /usr/local/go
+curl -Ls https://go.dev/dl/go1.19.7.linux-amd64.tar.gz | sudo tar -xzf - -C /usr/local
+eval $(echo 'export PATH=$PATH:/usr/local/go/bin' | sudo tee /etc/profile.d/golang.sh)
+eval $(echo 'export PATH=$PATH:$HOME/go/bin' | tee -a $HOME/.profile)
 fi
 
 # download binary
 cd $HOME && rm -rf defund
 git clone https://github.com/defund-labs/defund.git
 cd defund
-git checkout v0.2.4
+git checkout v0.2.6
 make install
 
 # config
@@ -83,11 +81,11 @@ defundd config keyring-backend test
 defundd init $NODENAME --chain-id $DEFUND_CHAIN_ID
 
 # download genesis and addrbook
-curl -s https://raw.githubusercontent.com/defund-labs/testnet/main/defund-private-4/genesis.json > ~/.defund/config/genesis.json
+curl -s https://raw.githubusercontent.com/defund-labs/testnet/main/orbit-alpha-1/genesis.json > ~/.defund/config/genesis.json
 curl -s https://snapshots2-testnet.nodejumper.io/defund-testnet/addrbook.json > $HOME/.defund/config/addrbook.json
 
 # set minimum gas price
-sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0ufetf\"/" $HOME/.defund/config/app.toml
+sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.0001ufetf\"/" $HOME/.defund/config/app.toml
 
 #optimize
 sed -i 's/max_num_inbound_peers =.*/max_num_inbound_peers = 150/g' $HOME/.defund/config/config.toml
@@ -95,9 +93,9 @@ sed -i 's/max_num_outbound_peers =.*/max_num_outbound_peers = 150/g' $HOME/.defu
 sed -i 's/max_packet_msg_payload_size =.*/max_packet_msg_payload_size = 10240/g' $HOME/.defund/config/config.toml
 sed -i 's/send_rate =.*/send_rate = 20480000/g' $HOME/.defund/config/config.toml
 sed -i 's/recv_rate =.*/recv_rate = 20480000/g' $HOME/.defund/config/config.toml
-sed -i 's/timeout_prevote =.*/timeout_prevote = "100ms"/g' $HOME/.defund/config/config.toml
-sed -i 's/timeout_precommit =.*/timeout_precommit = "100ms"/g' $HOME/.defund/config/config.toml
-sed -i 's/timeout_commit =.*/timeout_commit = "100ms"/g' $HOME/.defund/config/config.toml
+sed -i 's/timeout_prevote =.*/timeout_prevote = "130ms"/g' $HOME/.defund/config/config.toml
+sed -i 's/timeout_precommit =.*/timeout_precommit = "130ms"/g' $HOME/.defund/config/config.toml
+sed -i 's/timeout_commit =.*/timeout_commit = "130ms"/g' $HOME/.defund/config/config.toml
 sed -i 's/skip_timeout_commit =.*/skip_timeout_commit = false/g' $HOME/.defund/config/config.toml
 
 # set peers and seeds
@@ -139,9 +137,8 @@ WantedBy=multi-user.target
 EOF
 
 # reset
-defundd tendermint unsafe-reset-all --home $HOME/.defund --keep-addr-book
-
-curl https://snapshots2-testnet.nodejumper.io/defund-testnet/defund-private-4_2023-03-04.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.defund
+defundd tendermint unsafe-reset-all --home $HOME/.defund --keep-addr-book 
+curl https://snapshots2-testnet.nodejumper.io/defund-testnet/orbit-alpha-1_2023-03-21.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.defund
 
 # start service
 sudo systemctl daemon-reload
@@ -166,16 +163,19 @@ break
 ;;
 
 "Create Validator")
+
 defundd tx staking create-validator \
-  --amount 1000000ufetf \
-  --from $WALLET \
-  --commission-max-change-rate "0.01" \
-  --commission-max-rate "0.2" \
-  --commission-rate "0.07" \
-  --min-self-delegation "1" \
-  --pubkey  $(defundd tendermint show-validator) \
-  --moniker $NODENAME \
-  --chain-id $DEFUND_CHAIN_ID
+--amount=10000000ufetf \
+--pubkey=$(defundd tendermint show-validator) \
+--moniker $NODENAME \
+--chain-id=orbit-alpha-1 \
+--commission-rate=0.1 \
+--commission-max-rate=0.2 \
+--commission-max-change-rate=0.05 \
+--min-self-delegation=1 \
+--fees=2000ufetf \
+--from $WALLET \
+-y
   
 break
 ;;
