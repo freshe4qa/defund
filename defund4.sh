@@ -54,16 +54,30 @@ source $HOME/.bash_profile
 sudo apt update && sudo apt upgrade -y
 
 # packages
-sudo apt -q update
-sudo apt -qy install curl git jq lz4 build-essential
-sudo apt -qy upgrade
+sudo apt update && sudo apt upgrade -y
+sudo apt install curl build-essential git wget jq make gcc tmux chrony lz4 unzip -y
 
 # install go
-if ! [ -x "$(command -v go)" ]; then
+while getopts v: flag; do
+  case "${flag}" in
+  v) VER=$OPTARG ;;
+  *) echo "WARN: unknown parameter: ${OPTARG}"
+  esac
+done
+
+version=${VER:-"1.20"}
+
+curl -L -# -O "https://golang.org/dl/go$version.linux-amd64.tar.gz"
 sudo rm -rf /usr/local/go
-curl -Ls https://go.dev/dl/go1.19.7.linux-amd64.tar.gz | sudo tar -xzf - -C /usr/local
-eval $(echo 'export PATH=$PATH:/usr/local/go/bin' | sudo tee /etc/profile.d/golang.sh)
-eval $(echo 'export PATH=$PATH:$HOME/go/bin' | tee -a $HOME/.profile)
+sudo tar -C /usr/local -xzf "go$version.linux-amd64.tar.gz"
+rm "go$version.linux-amd64.tar.gz"
+
+touch $HOME/.bash_profile
+source $HOME/.bash_profile
+PATH_INCLUDES_GO=$(grep "$HOME/go/bin" $HOME/.bash_profile)
+if [ -z "$PATH_INCLUDES_GO" ]; then
+  echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> $HOME/.bash_profile
+  echo "export GOPATH=$HOME/go" >> $HOME/.bash_profile
 fi
 
 # download binary
