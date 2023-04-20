@@ -58,14 +58,14 @@ sudo apt install curl build-essential git wget jq make gcc tmux chrony lz4 unzip
 
 # install go
 if ! [ -x "$(command -v go)" ]; then
-  ver="1.19.4"
-  cd $HOME
-wget -O go1.19.4.linux-amd64.tar.gz https://golang.org/dl/go1.19.4.linux-amd64.tar.gz
-sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.19.4.linux-amd64.tar.gz && sudo rm go1.19.4.linux-amd64.tar.gz
-echo 'export GOROOT=/usr/local/go' >> $HOME/.bash_profile
-echo 'export GOPATH=$HOME/go' >> $HOME/.bash_profile
-echo 'export GO111MODULE=on' >> $HOME/.bash_profile
-echo 'export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin' >> $HOME/.bash_profile && . $HOME/.bash_profile
+ver="1.18.2"
+cd $HOME
+wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"
+rm "go$ver.linux-amd64.tar.gz"
+echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> ~/.bash_profile
+source ~/.bash_profile
 fi
 
 # download binary
@@ -73,8 +73,7 @@ cd $HOME && rm -rf defund
 git clone https://github.com/defund-labs/defund.git
 cd defund
 git checkout v0.2.6
-make build
-sudo mv ./build/defundd /usr/local/bin/ || exit
+make install
 
 # config
 defundd config chain-id $DEFUND_CHAIN_ID
@@ -141,7 +140,7 @@ EOF
 
 # reset
 defundd tendermint unsafe-reset-all --home $HOME/.defund --keep-addr-book 
-curl https://snapshots2-testnet.nodejumper.io/defund-testnet/orbit-alpha-1_2023-04-17.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.defund
+curl https://snapshots2-testnet.nodejumper.io/defund-testnet/orbit-alpha-1_2023-04-20.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.defund
 
 # start service
 sudo systemctl daemon-reload
