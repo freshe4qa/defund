@@ -90,14 +90,14 @@ curl -s https://snapshots2-testnet.nodejumper.io/defund-testnet/addrbook.json > 
 sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.0001ufetf\"/" $HOME/.defund/config/app.toml
 
 #optimize
-sed -i 's/max_num_inbound_peers =.*/max_num_inbound_peers = 150/g' $HOME/.defund/config/config.toml
-sed -i 's/max_num_outbound_peers =.*/max_num_outbound_peers = 150/g' $HOME/.defund/config/config.toml
+sed -i 's/max_num_inbound_peers =.*/max_num_inbound_peers = 30/g' $HOME/.defund/config/config.toml
+sed -i 's/max_num_outbound_peers =.*/max_num_outbound_peers = 30/g' $HOME/.defund/config/config.toml
 sed -i 's/max_packet_msg_payload_size =.*/max_packet_msg_payload_size = 10240/g' $HOME/.defund/config/config.toml
 sed -i 's/send_rate =.*/send_rate = 20480000/g' $HOME/.defund/config/config.toml
 sed -i 's/recv_rate =.*/recv_rate = 20480000/g' $HOME/.defund/config/config.toml
-sed -i 's/timeout_prevote =.*/timeout_prevote = "130ms"/g' $HOME/.defund/config/config.toml
-sed -i 's/timeout_precommit =.*/timeout_precommit = "130ms"/g' $HOME/.defund/config/config.toml
-sed -i 's/timeout_commit =.*/timeout_commit = "130ms"/g' $HOME/.defund/config/config.toml
+sed -i 's/timeout_prevote =.*/timeout_prevote = "100ms"/g' $HOME/.defund/config/config.toml
+sed -i 's/timeout_precommit =.*/timeout_precommit = "100ms"/g' $HOME/.defund/config/config.toml
+sed -i 's/timeout_commit =.*/timeout_commit = "1s"/g' $HOME/.defund/config/config.toml
 sed -i 's/skip_timeout_commit =.*/skip_timeout_commit = false/g' $HOME/.defund/config/config.toml
 
 # set peers and seeds
