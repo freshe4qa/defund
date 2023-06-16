@@ -140,7 +140,7 @@ EOF
 
 # reset
 defundd tendermint unsafe-reset-all --home $HOME/.defund --keep-addr-book 
-curl https://snapshots2-testnet.nodejumper.io/defund-testnet/orbit-alpha-1_2023-06-15.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.defund
+curl https://snapshots2-testnet.nodejumper.io/defund-testnet/orbit-alpha-1_2023-06-16.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.defund
 
 # start service
 sudo systemctl daemon-reload
