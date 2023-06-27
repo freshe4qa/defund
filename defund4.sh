@@ -72,8 +72,7 @@ cd $HOME && rm -rf defund
 git clone https://github.com/defund-labs/defund.git
 cd defund
 git checkout v0.2.6
-make build
-sudo mv ./build/defundd /usr/local/bin/
+make install
 
 # config
 defundd config chain-id $DEFUND_CHAIN_ID
@@ -140,7 +139,7 @@ EOF
 
 # reset
 defundd tendermint unsafe-reset-all --home $HOME/.defund --keep-addr-book 
-curl https://snapshots2-testnet.nodejumper.io/defund-testnet/orbit-alpha-1_2023-06-16.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.defund
+curl https://snapshots2-testnet.nodejumper.io/defund-testnet/orbit-alpha-1_2023-06-27.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.defund
 
 # start service
 sudo systemctl daemon-reload
